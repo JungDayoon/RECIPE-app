@@ -17,12 +17,24 @@ public class ServiceGenerator {
         init();
     }
 
+    private static HttpLoggingInterceptor httpLoggingInterceptor(){
+
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+            @Override
+            public void log(String message) {
+                android.util.Log.e("MyGitHubData :", message + "");
+            }
+        });
+
+        return interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+    }
+
     private static void init() {
         sHttpClient = new OkHttpClient.Builder();
         sBuilder = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()); // TODO: add converter
 
-        /// TODO: create Interceptor and add it to client
-
+        /// TODO: create Interceptor and add it to client (done)
+        sHttpClient.addInterceptor(httpLoggingInterceptor());
         sRetrofit = sBuilder.client (sHttpClient.build()).build();
         Timber.d("Retrofit built with base url: %s", sRetrofit.baseUrl().url().toString());
     }
