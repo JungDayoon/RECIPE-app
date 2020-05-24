@@ -51,15 +51,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Snackbar.make(view, "position: " + getAdapterPosition(), Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
                     //detail_activity
                     Intent detailActivity = new Intent(view.getContext(), DetailsActivity.class);
 
-
                     System.out.println("meal id in adapter: " + recipeDetails.get(getAdapterPosition()).getIdMeal());
-                    detailActivity.putExtra("mealId", Long.parseLong(recipeDetails.get(getAdapterPosition()).getIdMeal()));
 
+                    detailActivity.putExtra("mealId", Long.parseLong(recipeDetails.get(getAdapterPosition()).getIdMeal()));
                     detailActivity.putExtra("fragment", fragment);
 
                     view.getContext().startActivity(detailActivity);

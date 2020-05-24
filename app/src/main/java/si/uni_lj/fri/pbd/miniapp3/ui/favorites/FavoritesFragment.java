@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -42,9 +43,9 @@ public class FavoritesFragment extends Fragment {
             @Override
             public void onRefresh() {
                 //refresh
-                observerSetup();
-                recyclerSetup();
+                adapter.notifyDataSetChanged();
                 mSwipeRefreshLayout.setRefreshing(false);
+
             }
         });
 
@@ -72,7 +73,7 @@ public class FavoritesFragment extends Fragment {
 
     private void recyclerSetup() {
 
-        WrapContentGridLayoutManager layoutManager = new WrapContentGridLayoutManager(getContext(),2);
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
         RecyclerView recyclerView = getView().findViewById(R.id.favorite_recycler_view);
         recyclerView.setLayoutManager(layoutManager);
 

@@ -1,6 +1,7 @@
 package si.uni_lj.fri.pbd.miniapp3.ui.search;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -39,8 +40,9 @@ public class SearchFragment extends Fragment {
     String[] ingredientList;
     ArrayList<RecipeDetails> list;
     RecyclerViewAdapter r_adapter;
-    Boolean flag = false;
     MaterialProgressBar progressBar;
+    private long previousTime = 0;
+    private long nowTime;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,14 +58,27 @@ public class SearchFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                callRecipesByIngredient();
+                if(previousTime == 0)
+                {
+                    previousTime = System.currentTimeMillis();
+                }
+                else{
+                    nowTime = System.currentTimeMillis();
+                    long interval = (long)((nowTime - previousTime)/1000.0);
+                    System.out.println("interval: " + interval);
+                    if(interval >= 5.0)
+                    {
+                        callRecipesByIngredient();
+                        previousTime = nowTime;
+                    }
+                }
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         });
 
         progressBar = getActivity().findViewById(R.id.materialProgressBar);
 
-        WrapContentGridLayoutManager layoutManager = new WrapContentGridLayoutManager(getContext(),2);
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
         RecyclerView recyclerView = getView().findViewById(R.id.search_recycler_view);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -71,9 +86,20 @@ public class SearchFragment extends Fragment {
 //        r_adapter.setRecipeList(list, getContext());
         recyclerView.setAdapter(r_adapter);
 
-        callIngredientsData();
+        checkInternetState();
     }
 
+    public void checkInternetState(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert connectivityManager != null;
+        if(connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected())
+        {
+            callIngredientsData();
+        }
+        else{
+            Toast.makeText(getContext(), "Cannot connect to Internet", Toast.LENGTH_SHORT).show();
+        }
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -82,7 +108,7 @@ public class SearchFragment extends Fragment {
        return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
-    private void callIngredientsData(){
+    public void callIngredientsData(){
         RestAPI api;
         ServiceGenerator serviceGenerator = new ServiceGenerator();
         api = serviceGenerator.createService(RestAPI.class);
@@ -114,7 +140,6 @@ public class SearchFragment extends Fragment {
                         @Override
                         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                             selectedIngredient = adapter.getItem(i);
-                            Toast.makeText(getActivity(), selectedIngredient + " is selected", Toast.LENGTH_SHORT).show();
                             callRecipesByIngredient();
                         }
 
@@ -125,7 +150,7 @@ public class SearchFragment extends Fragment {
                     });
                 }
                 else{
-
+                    System.out.println("Spinner Error");
                 }
             }
             @Override
