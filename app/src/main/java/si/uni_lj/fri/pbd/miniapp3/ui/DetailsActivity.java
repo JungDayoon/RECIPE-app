@@ -44,8 +44,6 @@ public class DetailsActivity extends AppCompatActivity {
 
     private Long mealId;
     private String fragment;
-
-    Bitmap bm;
     ImageView imageMeal;
     TextView strMeal;
     TextView strArea;
@@ -72,6 +70,7 @@ public class DetailsActivity extends AppCompatActivity {
         strInstructions = findViewById(R.id.detail_strInstructions);
         favoriteBtn = findViewById(R.id.add_favorite);
 
+        //get intent from searchFragment or favoriteFragment
         Intent intent = getIntent();
         mealId = intent.getLongExtra("mealId", -1);
         fragment = intent.getStringExtra("fragment");
@@ -92,25 +91,24 @@ public class DetailsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 System.out.println(recipeDetailsIM.getFavorite());
 
+                //if user wants to add the recipeDetail to favoriteList
                 if(recipeDetailsIM.getFavorite() == false)
                 {
                     viewModel.insertRecipe(list.get(0));
-//                    Toast.makeText(getApplicationContext(), list.get(0).getStrMeal() + " is added to favorites", Toast.LENGTH_SHORT).show();
                     recipeDetailsIM.setFavorite(true);
                     favoriteBtn.setText("REMOVE FAVORITE");
                 }
-                else{
+                //if user wants to delete the recipeDetail from favoriteList
+                else {
                     viewModel.deleteRecipe(mealId);
                     recipeDetailsIM.setFavorite(false);
-                    if(fragment.equals("SEARCH"))
-                        favoriteBtn.setText("ADD FAVORITE");
-                    else
-                        finish();
+                    favoriteBtn.setText("ADD FAVORITE");
                 }
             }
         });
     }
 
+    //to show recipeDetail in favoriteList -> access to DB
     private void callRecipeFromDB() {
         viewModel.getRecipesById(mealId);
 
@@ -127,6 +125,7 @@ public class DetailsActivity extends AppCompatActivity {
                 });
     }
 
+    //to show recipeDetail which is in server
     private void callRecipeFromDTO(){
         System.out.println("callRecipeFromDTO");
 
@@ -159,35 +158,9 @@ public class DetailsActivity extends AppCompatActivity {
         });
     }
 
+    //method that prints recipeDetails
     private void printRecipeDetail(RecipeDetailsIM recipeDetailsIM)
     {
-//        Thread mThread = new Thread() {
-//            @Override
-//            public void run() {
-//                try {
-//                    URL url = new URL(recipeDetailsIM.getStrMealThumb());
-//                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//                    conn.setDoInput(true);
-//                    conn.connect();
-//
-//                    InputStream is = conn.getInputStream();
-//                    bm = BitmapFactory.decodeStream(is);
-//
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        };
-//
-//        mThread.start();
-//
-//        try{
-//            mThread.join();
-//            imageMeal.setImageBitmap(bm);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
         Glide.with(getApplicationContext()).load(recipeDetailsIM.getStrMealThumb()).override(800,400).into(imageMeal);
 
         strMeal.setText(recipeDetailsIM.getStrMeal());

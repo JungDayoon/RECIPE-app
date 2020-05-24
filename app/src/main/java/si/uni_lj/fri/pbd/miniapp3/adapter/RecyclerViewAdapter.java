@@ -32,12 +32,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public String fragment;
     public List<RecipeDetails> recipeDetails;
 
-    Bitmap bm;
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
         public ImageView itemImage;
         public TextView itemTitle;
 
@@ -56,6 +51,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                     System.out.println("meal id in adapter: " + recipeDetails.get(getAdapterPosition()).getIdMeal());
 
+                    //send mealId info and fragment info to detailActivity
                     detailActivity.putExtra("mealId", Long.parseLong(recipeDetails.get(getAdapterPosition()).getIdMeal()));
                     detailActivity.putExtra("fragment", fragment);
 
@@ -93,33 +89,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         if(holder.getAdapterPosition()!=RecyclerView.NO_POSITION)
         {
-//            Thread mThread = new Thread() {
-//                @Override
-//                public void run() {
-//                    try {
-//                        URL url = new URL(recipeDetails.get(position).getStrMealThumb());
-//                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//                        conn.setDoInput(true);
-//                        conn.connect();
-//
-//                        InputStream is = conn.getInputStream();
-//                        bm = BitmapFactory.decodeStream(is);
-//
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            };
-//
-//            mThread.start();
-//
-//            try{
-//                mThread.join();
-//                holder.itemImage.setImageBitmap(bm);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-
             Glide.with(holder.itemView).load(recipeDetails.get(position).getStrMealThumb()).override(400,400).into(holder.itemImage);
             holder.itemTitle.setText(recipeDetails.get(position).getStrMeal());
         }
@@ -127,7 +96,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    // Return the size of the data set (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return (null != recipeDetails ? recipeDetails.size() : 0);

@@ -54,7 +54,7 @@ public class SearchFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         System.out.println("on activityCreated");
-        SwipeRefreshLayout mSwipeRefreshLayout = getActivity().findViewById(R.id.swipeRefreshLayout);
+        SwipeRefreshLayout mSwipeRefreshLayout = getActivity().findViewById(R.id.search_swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -66,10 +66,11 @@ public class SearchFragment extends Fragment {
                     nowTime = System.currentTimeMillis();
                     long interval = (long)((nowTime - previousTime)/1000.0);
                     System.out.println("interval: " + interval);
+                    //if interval >= 5.0, get data from server
+                    //else, do nothing
                     if(interval >= 5.0)
                     {
                         callRecipesByIngredient();
-                        previousTime = nowTime;
                     }
                 }
                 mSwipeRefreshLayout.setRefreshing(false);
@@ -83,20 +84,17 @@ public class SearchFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         r_adapter = new RecyclerViewAdapter(list,"SEARCH");
-//        r_adapter.setRecipeList(list, getContext());
         recyclerView.setAdapter(r_adapter);
 
-        checkInternetState();
+        callIngredientsData();
     }
 
     public void checkInternetState(){
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         assert connectivityManager != null;
-        if(connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected())
+        //if it is not connected to internet
+        if(!(connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()))
         {
-            callIngredientsData();
-        }
-        else{
             Toast.makeText(getContext(), "Cannot connect to Internet", Toast.LENGTH_SHORT).show();
         }
     }
@@ -109,6 +107,8 @@ public class SearchFragment extends Fragment {
     }
 
     public void callIngredientsData(){
+        checkInternetState();
+
         RestAPI api;
         ServiceGenerator serviceGenerator = new ServiceGenerator();
         api = serviceGenerator.createService(RestAPI.class);
@@ -124,18 +124,18 @@ public class SearchFragment extends Fragment {
 
                 if(list!=null&&list.size()>0)
                 {
-                    ingredientList = new String[list.size()+1];
+                    ingredientList = new String[list.size()];
 
                     for (int i = 0; i < list.size(); i++) {
                         System.out.println(list.get(i).getStrIngredient());
                         ingredientList[i] = list.get(i).getStrIngredient();
                     }
 
-                    ingredientList[ingredientList.length-1] = "select ingredient"; //last item = hint
+                    previousTime = System.currentTimeMillis();
+
                     SpinnerAdapter adapter = new SpinnerAdapter(ingredientList, getActivity());
                     spinner = getActivity().findViewById(R.id.spinner);
                     spinner.setAdapter(adapter);
-                    //spinner.setSelection(adapter.getCount());
                     spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -166,6 +166,7 @@ public class SearchFragment extends Fragment {
         api = serviceGenerator.createService(RestAPI.class);
         Call<RecipesByIngredientsDTO> call = api.getRecipesByIngredients(selectedIngredient);
 
+        //show progressbar while data is loading
         progressBar.setVisibility(View.VISIBLE);
 
         call.enqueue(new Callback<RecipesByIngredientsDTO>() {
@@ -181,6 +182,7 @@ public class SearchFragment extends Fragment {
                     r_adapter.setRecipeList(list);
                 }
 
+                //if searchFragment gets all recipeList from server, hide progressbar
                 progressBar.setVisibility(View.GONE);
             }
             @Override

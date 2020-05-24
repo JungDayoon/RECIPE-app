@@ -11,8 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import si.uni_lj.fri.pbd.miniapp3.R;
 import si.uni_lj.fri.pbd.miniapp3.ui.search.SearchFragment;
@@ -58,14 +56,6 @@ public class SpinnerAdapter extends BaseAdapter {
         }
 
         tv.setText(ingredient[i]);
-
-        //if textView clicked, make event
-//        tv.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(context, getItem(i) + "is selected", Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
         return convertView;
     }

@@ -35,10 +35,12 @@ public class FavoritesFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         viewModel  = new ViewModelProvider.AndroidViewModelFactory(getActivity().getApplication()).create(ViewModel.class);
 
-        SwipeRefreshLayout mSwipeRefreshLayout = getActivity().findViewById(R.id.swipeRefreshLayout);
+        observerSetup();
+        recyclerSetup();
+
+        SwipeRefreshLayout mSwipeRefreshLayout = getActivity().findViewById(R.id.favorite_swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -48,9 +50,6 @@ public class FavoritesFragment extends Fragment {
 
             }
         });
-
-        observerSetup();
-        recyclerSetup();
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,8 +62,7 @@ public class FavoritesFragment extends Fragment {
         final Observer<List<RecipeDetails>> observer = new Observer<List<RecipeDetails>>() {
             @Override
             public void onChanged(List<RecipeDetails> recipeDetails) {
-                adapter.setRecipeList(recipeDetails);
-                adapter.notifyDataSetChanged();
+                adapter.setRecipeList(recipeDetails); //set recipeList which is in database
             }
         };
 
