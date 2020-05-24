@@ -93,33 +93,34 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         if(holder.getAdapterPosition()!=RecyclerView.NO_POSITION)
         {
-            Thread mThread = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        URL url = new URL(recipeDetails.get(position).getStrMealThumb());
-                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                        conn.setDoInput(true);
-                        conn.connect();
+//            Thread mThread = new Thread() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        URL url = new URL(recipeDetails.get(position).getStrMealThumb());
+//                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//                        conn.setDoInput(true);
+//                        conn.connect();
+//
+//                        InputStream is = conn.getInputStream();
+//                        bm = BitmapFactory.decodeStream(is);
+//
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            };
+//
+//            mThread.start();
+//
+//            try{
+//                mThread.join();
+//                holder.itemImage.setImageBitmap(bm);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
 
-                        InputStream is = conn.getInputStream();
-                        bm = BitmapFactory.decodeStream(is);
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-
-            mThread.start();
-
-            try{
-                mThread.join();
-                holder.itemImage.setImageBitmap(bm);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
+            Glide.with(holder.itemView).load(recipeDetails.get(position).getStrMealThumb()).override(400,400).into(holder.itemImage);
             holder.itemTitle.setText(recipeDetails.get(position).getStrMeal());
         }
 

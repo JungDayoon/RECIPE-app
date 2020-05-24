@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import org.w3c.dom.Text;
 
 import java.io.InputStream;
@@ -159,32 +161,35 @@ public class DetailsActivity extends AppCompatActivity {
 
     private void printRecipeDetail(RecipeDetailsIM recipeDetailsIM)
     {
-        Thread mThread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    URL url = new URL(recipeDetailsIM.getStrMealThumb());
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setDoInput(true);
-                    conn.connect();
+//        Thread mThread = new Thread() {
+//            @Override
+//            public void run() {
+//                try {
+//                    URL url = new URL(recipeDetailsIM.getStrMealThumb());
+//                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//                    conn.setDoInput(true);
+//                    conn.connect();
+//
+//                    InputStream is = conn.getInputStream();
+//                    bm = BitmapFactory.decodeStream(is);
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        };
+//
+//        mThread.start();
+//
+//        try{
+//            mThread.join();
+//            imageMeal.setImageBitmap(bm);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
-                    InputStream is = conn.getInputStream();
-                    bm = BitmapFactory.decodeStream(is);
+        Glide.with(getApplicationContext()).load(recipeDetailsIM.getStrMealThumb()).override(800,400).into(imageMeal);
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        mThread.start();
-
-        try{
-            mThread.join();
-            imageMeal.setImageBitmap(bm);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         strMeal.setText(recipeDetailsIM.getStrMeal());
         strArea.setText(recipeDetailsIM.getStrArea());
         String ingredient = "";
